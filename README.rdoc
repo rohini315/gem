@@ -1,28 +1,33 @@
-== README
+Stripe is to gem to make online payments.
+Basic Steps
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+1.gem install stripe
+2.add it to gemfile 
+  (source 'https://rubygems.org'
+  gem 'rails'
+  gem 'stripe'
+  )
+3.bundle exec rake
+4.generate a new Charges controller
+5. Establish routes for Charges (resources: charges)
+6. In the charges controller 
+  @amount = 500
 
-Things you may want to cover:
+  customer = Stripe::Customer.create(
+    :email => params[:stripeEmail],
+    :source  => params[:stripeToken]
+  )
 
-* Ruby version
+  charge = Stripe::Charge.create(
+    :customer    => customer.id,
+    :amount      => @amount,
+    :description => 'Rails Stripe customer',
+    :currency    => 'usd'
+  )
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+rescue Stripe::CardError => e
+  flash[:error] = e.message
+  redirect_to new_charge_path
+end
 
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
